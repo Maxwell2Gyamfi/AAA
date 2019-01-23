@@ -262,11 +262,11 @@ int login(struct User *user, int count)
 
 						if (position > 0)
 						{
-							printf("This account is banned, please contact an admin(%s)", user[0].user_email);
+							printf("\nThis account is banned, please contact an admin(%s)", user[0].user_email);
 						}
 						else if (position ==0)
 						{
-							printf("Admin account is banned, please contact developer('Maxwell2.Gyamfi@live.uwe.ac.uk')");
+							printf("\nAdmin account is banned, please contact developer('Maxwell2.Gyamfi@live.uwe.ac.uk')");
 						}
 						Pause();
 						break;
