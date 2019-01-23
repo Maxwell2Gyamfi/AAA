@@ -1,6 +1,37 @@
 #pragma once
+#include "Linked_list.h"
+#include "Prototypes.h"
 #include "Validators.h"
-#include "Linked List.h"
+
+/**************************************************************************
+* Function Name: main_display_menu()
+*
+* Funtion Description:
+*   -This function displays the main menu of the program prompting the user
+*    to select an option between, login with email and password and create
+*    a new user account.
+*
+* User-interface variables:-
+*	*OUT (Return values):
+*			- NONE
+*	*IN (Value Parameters):
+*			- NONE
+*	*IN and OUT (Reference Parameters):
+*			- NONE
+*
+* History [Date (Author): Description)]:-
+* 2019-17-01 (Maxwell Gyamfi): displays main menu
+****************************************************************************/
+void main_display_menu()
+{
+	printf("\n\n");
+	printf("               WAREHOUSE SYSTEMS MAIN MENU\n");
+	printf("               ---------------------------\n");
+	printf("  1 ---> Login with email and password\n");
+	printf("  2 ---> Create a new account\n");
+	printf("  3 ---> Exit program\n\n");
+	printf("---> Select an option(1-3): ");
+}
 /***************************************************************************************
 * Function Name: create_account(int *count,struct User *new_user)
 *
@@ -70,111 +101,6 @@ int create_account(int *count, struct User *new_user)
 
 	printf("\nAccount created successfully!!!");
 }
-/*******************************************************************************
-* Function Name: change_password(struct User *user,int position)
-*
-* Funtion Description:
-*   -This function allows a user to modify an existing password.
-*    It will first request current password from user and if it matches it
-*    will then give them the possiblity to change password requestig a new one.
-*   -It displays appropriate error mesage if incorrect password provided
-*
-* User-interface variables:-
-*	*OUT (Return values):
-*			- NONE
-*	*IN (Value Parameters):
-*			- int position
-*	*IN and OUT (Reference Parameters):
-*			- struct User *user
-*
-* History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): changes user password
-*********************************************************************************/
-void change_password(struct User *user, int position)
-{
-	//local variables
-	char buffer[20];
-	char ptr[20];
-	int flag = 0;
-	char password[20];
-
-	system("cls");//clear screen
-	printf("\n\n");
-	printf("          CHANGE PASSWORD MENU\n");
-	printf("          --------------------\n");
-
-
-	printf("Input previous password: ");
-	get_valid_password(buffer);
-	cipher_password(buffer, user[position].user_email, password, 0);//encypts password input
-
-	if (strcmp(password, user[position].user_password) == 0)//compare passwords
-	{
-		while (flag == 0)
-		{
-			//request new password and compare
-			printf("\n ---> Input new password: ");
-			get_valid_password(ptr);
-			printf("\n ---> Re-input password: ");
-			get_valid_password(buffer);
-
-			if (strcmp(ptr, buffer) == 0)
-			{
-				cipher_password(ptr, user[position].user_email, buffer, 0);//encrypts password
-				strcpy(user[position].user_password, buffer);//saves new password
-				printf("\nPassword successfully changed!!!");
-				flag = 1;
-			}
-			else printf("\nInputted password didn't match, try again: ");
-		}
-	}
-	else
-	{
-		printf("\nIncorrect password!!!");
-	}
-}
-/************************************************************************
-* Function Name: send_email(struct User *user, int position)
-*
-* Funtion Description:
-*   -This function sends an email to a user email-address in case they
-*    forgot their password.
-*
-* User-interface variables:-
-*	*OUT (Return values):
-*			- NONE
-*	*IN (Value Parameters):
-*			- struct User *user, int position
-*	*IN and OUT (Reference Parameters):
-*			- NONE
-*
-* History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): sends email to user email address
-***********************************************************************/
-void send_email(struct User *user, int position)
-{
-	//local varaibles
-	char password[20];
-	char cmd[100];
-	char to[20];
-	char body[20];
-	char tempFile[100];     // name of tempfile.
-	cipher_password(user[position].user_password, user[position].user_email, password, 1);
-
-	strcpy(body, password);
-	strcpy(to, user[position].user_email);
-	strcpy(tempFile, tempnam("/tmp", "sendmail"));
-
-	FILE *fp = fopen(tempFile, "w"); // open it for writing.
-	fprintf(fp, "%s\n", body);        // write body to it.
-	fclose(fp);             // close it.
-
-	sprintf(cmd, "sendmail %s < %s", to, tempFile); // prepare command.
-	system(cmd);     // execute it
-
-
-}
-
 /***************************************************************************************
 * Function Name:  read_users_file(struct User *users,char *name)
 *
@@ -193,7 +119,6 @@ void send_email(struct User *user, int position)
 * History [Date (Author): Description)]:-
 * 2019-17-01 (Maxwell Gyamfi): reads data from txt file
 ******************************************************************************************/
-
 int read_users_file(struct User *users, char *name)
 {
 	//local variables
@@ -386,6 +311,40 @@ int login(struct User *user, int count)
 
 	save_users_files(user, count, "all_users.txt");//save updated list of users to file
 	return count;
+}
+/***************************************************************************************
+* Function Name:  valid_login_email(struct User *user, int count,char *email)
+*
+* Funtion Description:
+*   -This function returns the position of the email address if present in the system,
+*    otherwise returns -1 as email not found as position 0 is occupied by admin
+*
+*
+* User-interface variables:-
+*	*OUT (Return values):
+*			- email address position
+*	*IN (Value Parameters):
+*			- struct User *user, int count,char *email
+*	*IN and OUT (Reference Parameters):
+*			- NONE
+*
+* History [Date (Author): Description)]:-
+* 2019-17-01 (Maxwell Gyamfi): returns position of email address in the system
+******************************************************************************************/
+int valid_login_email(struct User *user, int count, char *email)
+{
+
+	int i = 0;
+
+	//checks the presence of email in the system
+	for (i = 0; i < count; i++)
+	{
+		if (strcmp(user[i].user_email, email) == 0)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 /***************************************************************************************
 * Function Name:  admin_account_menu()
@@ -885,6 +844,105 @@ void unsuspend_user(struct User *user, int count)
 	}
 }
 /***************************************************************************************
+* Function Name: id_exist(struct User*banned, int count,int id)
+*
+* Funtion Description:
+*   This function checks if a user account is suspended by comparing the id to the ids of
+*   banned list array
+*
+*
+* User-interface variables:-
+*	*OUT (Return values):
+*			- bool(1:True,0:False)
+*	*IN (Value Parameters):
+*			- struct User*banned, int count,int id
+*	*IN and OUT (Reference Parameters):
+*			- NONE
+*
+* History [Date (Author): Description)]:-
+* 2019-17-01 (Maxwell Gyamfi): checks if a user is on suspended list
+******************************************************************************************/
+int id_exist(struct User*banned, int count, int id)
+{
+	//local variables
+	int i = 0;
+
+	//loop and check if account is suspended
+	for (i = 0; i < count; i++)
+	{
+		if (banned[i].user_id == id)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+/***************************************************************************************
+* Function Name: remove_account(struct User *users, int count,int position,
+*                linked_list_items**head)
+*
+* Funtion Description:
+*   This function allows the user of the system to permanently remove a account from
+*   the system.
+*   It denies permission if the admin of the system tries to delete their own account
+*   otherwise it will request confirmation of the user deleting their account and if
+*   they decide to carry on, it will free all heads of linked list items,removed user
+*   text file from system, push the user in the array to the edge and reduce the number
+*   of system users by 1.
+*
+*
+* User-interface variables:-
+*	*OUT (Return values):
+*			- count
+*	*IN (Value Parameters):
+*			- int position,int count
+*	*IN and OUT (Reference Parameters):
+*			- struct User *users,linked_list_items**head
+*
+* History [Date (Author): Description)]:-
+* 2019-17-01 (Maxwell Gyamfi): removes user account from system
+******************************************************************************************/
+int remove_account(struct User *users, int count, int position, linked_list_items**head)
+{
+	//local variables
+	int status = 0;
+	int i = 0;
+	char choice = '\0';
+	int old_position = position;
+	userdetails temp;
+	userdetails *ptr = &users[0];
+
+	if (position == 0)
+	{
+		printf("\nAdmin account cannot be removed,\nPlease contact developer('Maxwell2.Gyamfi@live.uwe.ac.uk')");
+		return count;
+	}
+
+	printf("\nConfirm removing your account?(Y/N): ");
+	choice = get_valid_yes_or_no();
+	if (choice == 'Y')
+	{
+		free_linked_list_items(head);//free block of memory allocated
+		status = remove(users[position].user_email);//remove user file
+		//push user account to edge of array
+		while (position < count)
+		{
+			temp = ptr[position];
+			ptr[position] = ptr[position + 1];
+			ptr[position + 1] = temp;
+			position++;
+		}
+		count -= 1;
+		save_users_files(users, count, "all_users.txt");//save updated users back to file
+		printf("\nAccount removed successfully!!!!");
+	}
+	else
+	{
+		printf("\nAccount not removed");
+	}
+	return count;
+}
+/***************************************************************************************
 * Function Name: user_account_menu()
 *
 * Funtion Description:
@@ -994,101 +1052,132 @@ int user_menu(struct User *user, int count, int position)
 	free_linked_list_items(&head);//free block of memory allocated
 	return count;
 }
-/***************************************************************************************
-* Function Name: cipher_password(char *password,char *key,char *pswd,int value)
+/*******************************************************************************
+* Function Name: change_password(struct User *user,int position)
 *
 * Funtion Description:
-*   -This function encrypts and decrypts a password provided by user.
-*   -It first generate a key which is then summed or subracted to password
-*    based on switch value.
+*   -This function allows a user to modify an existing password.
+*    It will first request current password from user and if it matches it
+*    will then give them the possiblity to change password requestig a new one.
+*   -It displays appropriate error mesage if incorrect password provided
 *
 * User-interface variables:-
 *	*OUT (Return values):
 *			- NONE
 *	*IN (Value Parameters):
-*			- char *password,char *key,int value
+*			- int position
 *	*IN and OUT (Reference Parameters):
-*			- char *pswd
+*			- struct User *user
 *
 * History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): encrypts and decrypts password
-******************************************************************************************/
-void cipher_password(char *password, char *key, char *pswd, int value)
+* 2019-17-01 (Maxwell Gyamfi): changes user password
+*********************************************************************************/
+void change_password(struct User *user, int position)
 {
 	//local variables
-	int i, j = 0;
-	//calculates password and key length
-	int len_password = strlen(password);
-	int len_key = strlen(key);
+	char buffer[20];
+	char ptr[20];
+	int flag = 0;
+	char password[20];
 
-	//dynamically allocates memory 
-	char *new_key = (char*)malloc(len_password * sizeof(char));
-	char *encrypted_msg = (char*)malloc(len_password * sizeof(char));
-	char *decrypted_msg = (char*)malloc(len_password * sizeof(char));
+	system("cls");//clear screen
+	printf("\n\n");
+	printf("          CHANGE PASSWORD MENU\n");
+	printf("          --------------------\n");
 
-	//loops and generate new key
-	for (i = 0, j = 0; i < len_password; i++, j++)
+
+	printf("Input previous password: ");
+	get_valid_password(buffer);
+	cipher_password(buffer, user[position].user_email, password, 0);//encypts password input
+
+	if (strcmp(password, user[position].user_password) == 0)//compare passwords
 	{
-		if (j == len_key)
+		while (flag == 0)
 		{
-			j = 0;
+			//request new password and compare
+			printf("\n ---> Input new password: ");
+			get_valid_password(ptr);
+			printf("\n ---> Re-input password: ");
+			get_valid_password(buffer);
+
+			if (strcmp(ptr, buffer) == 0)
+			{
+				cipher_password(ptr, user[position].user_email, buffer, 0);//encrypts password
+				strcpy(user[position].user_password, buffer);//saves new password
+				printf("\nPassword successfully changed!!!");
+				flag = 1;
+			}
+			else printf("\nInputted password didn't match, try again: ");
 		}
-		new_key[i] = key[j];
 	}
-	new_key[i] = '\0';
-
-	//action selection menu
-	switch (value)
+	else
 	{
-	case 0:
-		//encrypts password by summing password to key and 'A' character
-		for (i = 0; i < len_password; i++)
-		{
-			encrypted_msg[i] = ((password[i] + new_key[i])) + 'A';
-		}
-		encrypted_msg[i] = '\0';
-		strcpy(pswd, encrypted_msg);
-		break;
-	case 1:
-		//decrypts password by subracting password from key and 'A' character
-		for (i = 0; i < len_password; i++)
-		{
-			decrypted_msg[i] = ((password[i] - new_key[i])) - 'A';
-		}
-		decrypted_msg[i] = '\0';
-		strcpy(pswd, decrypted_msg);
-		break;
-	default:
-		break;
+		printf("\nIncorrect password!!!");
 	}
 }
-/***************************************************************************************
-* Function Name: copy_string(char *source, char*destination)
+/********************************************************************
+* Function Name: send_email(struct User *user, int position)
 *
 * Funtion Description:
-*   -This function copys one array of characters to another array
+*   -This function sends an email to a user email-address in case they
+*    forgot their password.
 *
 * User-interface variables:-
 *	*OUT (Return values):
 *			- NONE
 *	*IN (Value Parameters):
-*			- char *source
+*			- struct User *user, int position
 *	*IN and OUT (Reference Parameters):
-*			- char*destination
+*			- NONE
 *
 * History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): copys characters to array
-******************************************************************************************/
-void copy_string(char *source, char*destination)
+* 2019-17-01 (Maxwell Gyamfi): sends email to user email address
+***********************************************************************/
+void send_email(struct User *user, int position)
 {
-	//local variable
-	int i = 0;
+	//local varaibles
+	char password[20];
+	char cmd[100];
+	char to[20];
+	char body[20];
+	char tempFile[100];     // name of tempfile.
+	cipher_password(user[position].user_password, user[position].user_email, password, 1);
 
-	int lenght = get_string_length(source);//calculate string length
-	for (i = 0; i < lenght; i++)
-	{
-		destination[i] = source[i];
-	}
-	destination[lenght] = '\0';
+	strcpy(body, password);
+	strcpy(to, user[position].user_email);
+	strcpy(tempFile, tempnam("/tmp", "sendmail"));
+
+	FILE *fp = fopen(tempFile, "w"); // open it for writing.
+	fprintf(fp, "%s\n", body);        // write body to it.
+	fclose(fp);             // close it.
+
+	sprintf(cmd, "sendmail %s < %s", to, tempFile); // prepare command.
+	system(cmd);     // execute it.
+
+
 }
+/******************************************************************************************
+* Function Name: Pause()
+*
+* Funtion Description:
+*   This function pauses the screen prompting the user to press any key to proceed
+*
+*
+* User-interface variables:-
+*	*OUT (Return values):
+*			- NONE
+*	*IN (Value Parameters):
+*			- NONE
+*	*IN and OUT (Reference Parameters):
+*			- NONE
+*
+* History [Date (Author): Description)]:-
+* 2019-17-01 (Maxwell Gyamfi): pauses screen
+******************************************************************************************/
+void Pause()
+{
 
+	printf("\n\nPress any key to continue...");
+	getch();
+
+}

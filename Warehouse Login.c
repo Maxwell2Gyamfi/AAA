@@ -14,7 +14,7 @@
 *	   -Search a user account
 *	   -Suspend a user account
 *	   -Remove account from suspended list
-*      -Change Password
+*          -Change Password
 *
 *     -User Mode Functionalities consists of:
 *      -Add an Item to warehouse
@@ -25,7 +25,7 @@
 *	   -Delete personal account
 *
 *	   -Create new account: which allows user to create a new account if not present
-*       in the system.
+*           in the system.
 *
 * User-interface variables:-
 *	   *OUT (Return values):
@@ -40,53 +40,10 @@
 *******************************************************************************************/
 
 //disables visual studio default functions
-#pragma warning(disable:4996)
-
-// Standard C library header files (#include ....):
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "Prototypes.h"
 #include "Validators.h"
-#include "Linked List.h"
+#include "Linked_list.h"
 #include "User.h"
-
-//definitions
-#define EMAIL_LENGHT 20
-#define PASSWORD_LENGHT 15
-#define MAX_LENGHT_DESCRIPTION 40
-#define MAX_ACCOUNTS 9999
-#define POUND_SIGN 156
-
-//Record data-types declarations
-typedef struct Items
-{
-	int item_number;
-	char item_description[MAX_LENGHT_DESCRIPTION];
-	float item_price;
-
-}items;
-
-//Record data-types declarations
-typedef struct User
-{
-	int user_id;
-	char user_email[EMAIL_LENGHT];
-	char user_password[PASSWORD_LENGHT];
-	int is_admin;
-	int login_attempts;
-	int is_suspended;
-	int total_items;
-
-}userdetails;
-
-//Record data-types declarations
-typedef struct Items_linked_list
-{
-	items item;
-	struct Items_linked_list *next;
-
-}linked_list_items;
 
 int main()
 {
@@ -126,57 +83,4 @@ int main()
 	free(users);
 	return 0;
 }
-/**************************************************************************
-* Function Name: main_display_menu()
-*
-* Funtion Description:
-*   -This function displays the main menu of the program prompting the user
-*    to select an option between, login with email and password and create
-*    a new user account.
-*
-* User-interface variables:-
-*	*OUT (Return values):
-*			- NONE
-*	*IN (Value Parameters):
-*			- NONE
-*	*IN and OUT (Reference Parameters):
-*			- NONE
-*
-* History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): displays main menu
-****************************************************************************/
-void main_display_menu()
-{
-	printf("\n\n");
-	printf("               WAREHOUSE SYSTEMS MAIN MENU\n");
-	printf("               ---------------------------\n");
-	printf("  1 ---> Login with email and password\n");
-	printf("  2 ---> Create a new account\n");
-	printf("  3 ---> Exit program\n\n");
-	printf("---> Select an option(1-3): ");
-}
-/******************************************************************************************
-* Function Name: Pause()
-*
-* Funtion Description:
-*   This function pauses the screen prompting the user to press any key to proceed
-*
-*
-* User-interface variables:-
-*	*OUT (Return values):
-*			- NONE
-*	*IN (Value Parameters):
-*			- NONE
-*	*IN and OUT (Reference Parameters):
-*			- NONE
-*
-* History [Date (Author): Description)]:-
-* 2019-17-01 (Maxwell Gyamfi): pauses screen
-******************************************************************************************/
-void Pause()
-{
 
-	printf("\n\nPress any key to continue...");
-	getch();
-
-}
