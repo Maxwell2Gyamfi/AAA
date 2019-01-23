@@ -255,15 +255,16 @@ int login(struct User *user, int count)
 				{
 					//decrement login attempts
 					ptr[position].login_attempts -= 1;
+					save_users_files(user, count, "all_users.txt");//save updated list of users to file
 					if (ptr[position].login_attempts == 0)
 					{
 						ptr[position].is_suspended = 1;//suspend user if attempts = 0
 
-						if (ptr[0].is_suspended == 0)
+						if (position > 0)
 						{
 							printf("This account is banned, please contact an admin(%s)", user[0].user_email);
 						}
-						else if (ptr[0].is_suspended == 1)
+						else if (position ==0)
 						{
 							printf("Admin account is banned, please contact developer('Maxwell2.Gyamfi@live.uwe.ac.uk')");
 						}
@@ -271,7 +272,8 @@ int login(struct User *user, int count)
 						break;
 					}
 					system("cls");
-					printf("\n\n  PASSWORD INPUT\n");
+					printf("\n\n");
+					printf("      PASSWORD INPUT\n");
 					printf("      --------------\n");
 					printf("\nEmail : %s", user[position].user_email);
 					printf("\nIncorrect password(attempts remaining:%d)\n", user[position].login_attempts);
@@ -293,7 +295,11 @@ int login(struct User *user, int count)
 		else
 		{
 			//checks if user suspended and display account banned message
-			if (user[position].login_attempts == 0 && user[position].is_suspended == 1)
+			if (position == 0 && user[0].is_suspended == 1)
+			{
+				printf("\nAdmin account banned,please contact developer'Maxwell2.Gyamfi@live.uwe.ac.uk");
+			}
+			else if (user[position].login_attempts == 0 && user[position].is_suspended == 1)
 			{
 				printf("\nThis account is banned, please contact an admin(%s)", user[0].user_email);
 				Pause();
@@ -308,7 +314,6 @@ int login(struct User *user, int count)
 		}
 
 	} while (success == 0);
-
 	save_users_files(user, count, "all_users.txt");//save updated list of users to file
 	return count;
 }
